@@ -5,7 +5,7 @@ if(isset($_GET['page'])) {
     $page = $_GET['page'];
     
     // Daftar halaman yang diizinkan
-    $allowed_pages = ['home', 'about_me', 'contact_me'];
+    $allowed_pages = ['home', 'about_me', 'contact_me', 'level', 'studies'];
     
     // Cek apakah halaman ada dalam daftar yang diizinkan
     if(in_array($page, $allowed_pages)) {

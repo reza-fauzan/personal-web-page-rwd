@@ -28,8 +28,8 @@
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">My Studies</a>
         <div class="dropdown-menu">
-          <a class="dropdown-item" href="#">Level</a>
-          <a class="dropdown-item" href="#">Studies</a>
+          <a class="dropdown-item" href="index.php?page=level">Level</a>
+          <a class="dropdown-item" href="index.php?page=studies">Studies</a>
         </div>
       </li>
       <li class="nav-item">
