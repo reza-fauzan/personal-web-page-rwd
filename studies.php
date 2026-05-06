@@ -5,9 +5,12 @@ require_once 'controllers/StudiesController.php';
 // Inisialisasi controller
 $controller = new StudiesController($dbh);
 
+// Cek apakah user sudah login
+$isLogin = isset($_SESSION['is_login']) && $_SESSION['is_login'] === true;
+
 // Ambil data untuk edit
 $edit = null;
-if(isset($_GET['edit'])) {
+if(isset($_GET['edit']) && $isLogin) {
     $edit = $controller->edit($_GET['edit']);
 }
 
@@ -20,8 +23,15 @@ $levels = $controller->getLevels();
     <h2>Data Riwayat Pendidikan</h2>
     <hr>
     
+    <?php if(!$isLogin): ?>
+    <div class="alert alert-warning">
+        <strong>Info:</strong> Anda harus <a href="login.php" class="alert-link">login</a> untuk mengelola data Riwayat Pendidikan.
+    </div>
+    <?php endif; ?>
+    
     <div class="row">
         <!-- Form -->
+        <?php if($isLogin): ?>
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header bg-primary text-white">
@@ -87,9 +97,10 @@ $levels = $controller->getLevels();
                 </div>
             </div>
         </div>
+        <?php endif; ?>
         
         <!-- Table -->
-        <div class="col-md-8">
+        <div class="<?php echo $isLogin ? 'col-md-8' : 'col-md-12'; ?>">
             <div class="card">
                 <div class="card-header bg-success text-white">
                     Daftar Riwayat Pendidikan
@@ -104,7 +115,9 @@ $levels = $controller->getLevels();
                                     <th>Level</th>
                                     <th>Tahun Lulus</th>
                                     <th>Foto</th>
+                                    <?php if($isLogin): ?>
                                     <th>Aksi</th>
+                                    <?php endif; ?>
                                 </tr>
                             </thead>
                             <tbody>
@@ -128,6 +141,7 @@ $levels = $controller->getLevels();
                                         <span class="text-muted">-</span>
                                         <?php endif; ?>
                                     </td>
+                                    <?php if($isLogin): ?>
                                     <td>
                                         <a href="index.php?page=studies&edit=<?php echo $row['id']; ?>" 
                                            class="btn btn-warning btn-sm">Edit</a>
@@ -135,6 +149,7 @@ $levels = $controller->getLevels();
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('Yakin hapus?')">Hapus</a>
                                     </td>
+                                    <?php endif; ?>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
