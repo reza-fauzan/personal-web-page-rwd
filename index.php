@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 // Proses controller sebelum output HTML
 if(isset($_GET['page'])) {
     $page = $_GET['page'];

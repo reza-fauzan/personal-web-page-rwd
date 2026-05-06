@@ -16,55 +16,73 @@ class StudiesController {
     // Proses tambah data
     public function tambah() {
         if(isset($_POST['simpan'])) {
+            // Ambil data dari form
             $nama = $_POST['nama'];
             $idlevel = $_POST['idlevel'];
             $keterangan = $_POST['keterangan'];
             $tahun_lulus = $_POST['tahun_lulus'];
             
-            // Upload foto
-            $foto = '';
-            if(isset($_FILES['foto_sekolah']) && $_FILES['foto_sekolah']['error'] == 0) {
-                $target_dir = "images/uploads/";
-                
-                // Buat folder jika belum ada
-                if(!file_exists($target_dir)) {
-                    mkdir($target_dir, 0777, true);
-                }
-                
-                $foto = $target_dir . basename($_FILES["foto_sekolah"]["name"]);
-                move_uploaded_file($_FILES["foto_sekolah"]["tmp_name"], $foto);
-            }
+            // Proses upload foto (business logic)
+            $foto = $this->uploadFoto();
             
+            // Simpan ke database lewat model
             $this->model->create($nama, $idlevel, $keterangan, $tahun_lulus, $foto);
+            
+            // Redirect
             echo "<script>window.location.href='index.php?page=studies';</script>";
             exit();
         }
     }
     
+    // Method untuk upload foto (business logic)
+    private function uploadFoto() {
+        $foto = '';
+        
+        if(isset($_FILES['foto_sekolah']) && $_FILES['foto_sekolah']['error'] == 0) {
+            $target_dir = "images/uploads/";
+            
+            // Buat folder jika belum ada
+            if(!file_exists($target_dir)) {
+                mkdir($target_dir, 0777, true);
+            }
+            
+            // Generate nama file unik
+            $file_extension = pathinfo($_FILES["foto_sekolah"]["name"], PATHINFO_EXTENSION);
+            $file_name = time() . '_' . basename($_FILES["foto_sekolah"]["name"]);
+            $foto = $target_dir . $file_name;
+            
+            // Upload file
+            move_uploaded_file($_FILES["foto_sekolah"]["tmp_name"], $foto);
+        }
+        
+        return $foto;
+    }
+    
     // Proses update data
     public function update() {
         if(isset($_POST['update'])) {
+            // Ambil data dari form
             $id = $_POST['id'];
             $nama = $_POST['nama'];
             $idlevel = $_POST['idlevel'];
             $keterangan = $_POST['keterangan'];
             $tahun_lulus = $_POST['tahun_lulus'];
             
-            // Upload foto baru jika ada
+            // Cek apakah ada foto baru
             $foto = $_POST['foto_lama'];
             if(isset($_FILES['foto_sekolah']) && $_FILES['foto_sekolah']['error'] == 0) {
-                $target_dir = "images/uploads/";
-                
-                // Buat folder jika belum ada
-                if(!file_exists($target_dir)) {
-                    mkdir($target_dir, 0777, true);
+                // Hapus foto lama jika ada
+                if(!empty($foto) && file_exists($foto)) {
+                    unlink($foto);
                 }
-                
-                $foto = $target_dir . basename($_FILES["foto_sekolah"]["name"]);
-                move_uploaded_file($_FILES["foto_sekolah"]["tmp_name"], $foto);
+                // Upload foto baru
+                $foto = $this->uploadFoto();
             }
             
+            // Update ke database lewat model
             $this->model->update($id, $nama, $idlevel, $keterangan, $tahun_lulus, $foto);
+            
+            // Redirect
             echo "<script>window.location.href='index.php?page=studies';</script>";
             exit();
         }
